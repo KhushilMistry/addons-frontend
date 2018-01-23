@@ -102,7 +102,7 @@ export class AddonBase extends React.Component {
     // of an error.
     if (!errorHandler.hasError()) {
       if (addon) {
-        if (!isNaN(params.slug)) {
+        if (!Number.isNaN(params.slug)) {
           // We only load add-ons by slug, but ID must be supported too because
           // it is a legacy behavior.
           dispatch(sendServerRedirect({
@@ -609,7 +609,7 @@ export function mapStateToProps(state, ownProps) {
 
   // It is possible to load an add-on by its ID but in the routing parameters,
   // the parameter is always named `slug`.
-  if (slug && !isNaN(slug)) {
+  if (slug && !Number.isNaN(slug)) {
     addon = getAddonByID(state, slug);
   }
 
