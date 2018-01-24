@@ -109,7 +109,7 @@ describe(__filename, () => {
       return api.callApi({ endpoint: 'resource', errorHandler })
         .then(unexpectedSuccess, () => {
           expect(errorHandler.handle.called).toBeTruthy();
-          const args = errorHandler.handle.firstCall.args;
+          const { args } = errorHandler.handle.firstCall;
           expect(args[0].response.data.non_field_errors).toEqual(nonFieldErrors);
         });
     });
@@ -157,7 +157,7 @@ describe(__filename, () => {
       return api.callApi({ endpoint: 'resource', errorHandler })
         .then(unexpectedSuccess, () => {
           expect(errorHandler.handle.called).toBeTruthy();
-          const args = errorHandler.handle.firstCall.args;
+          const { args } = errorHandler.handle.firstCall;
           expect(args[0].message).toEqual('this could be any error');
         });
     });
@@ -605,6 +605,25 @@ describe(__filename, () => {
         .then(unexpectedSuccess, (error) => {
           expect(error.message).toMatch(/too many pages/);
         });
+    });
+  });
+
+  describe('validateLocalizedString', () => {
+    it('throws an error for invalid locale keys', () => {
+      const description = { notAValidKey: 'some description' };
+
+      expect(() => api.validateLocalizedString(description))
+        .toThrow(/Unknown locale: "notAValidKey"/);
+    });
+
+    it('allows valid locale keys', () => {
+      const description = { fr: 'la description' };
+      api.validateLocalizedString(description);
+    });
+
+    it('throws an error for non-object values', () => {
+      expect(() => api.validateLocalizedString(9))
+        .toThrow('Expected an object type, got "number"');
     });
   });
 });
