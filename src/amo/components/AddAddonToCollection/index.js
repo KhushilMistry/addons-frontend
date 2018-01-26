@@ -1,6 +1,6 @@
 /* @flow */
 /* global window */
-/* eslint-disable react/sort-comp */
+/* eslint-disable react/sort-comp, react/no-unused-prop-types */
 import makeClassName from 'classnames';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -12,6 +12,7 @@ import {
 import { withFixedErrorHandler } from 'core/errorHandler';
 import translate from 'core/i18n/translate';
 import log from 'core/logger';
+import Card from 'ui/components/Card';
 import Select from 'ui/components/Select';
 import Notice from 'ui/components/Notice';
 import type { AddonType } from 'core/types/addons';
@@ -49,6 +50,13 @@ type SelectData = {|
   actionOptions: Array<Object>,
   collectionOptions: Array<Object>,
   disabled: boolean,
+|};
+
+type CreateOptionParams = {|
+  disabled?: boolean,
+  key: string,
+  onSelect?: OnSelectOptionType,
+  text: string,
 |};
 
 export class AddAddonToCollectionBase extends React.Component<Props> {
@@ -127,19 +135,15 @@ export class AddAddonToCollectionBase extends React.Component<Props> {
     }));
   }
 
-  createOption(
-    {
-      text, key, onSelect,
-    }: {
-      // eslint-disable-next-line react/no-unused-prop-types
-      text: string, key: string, onSelect?: OnSelectOptionType,
-    }
-  ) {
+  createOption({
+    text, key, onSelect, disabled = false,
+  }: CreateOptionParams) {
     if (onSelect) {
       this.optionSelectHandlers[key] = onSelect;
     }
     return (
       <option
+        disabled={disabled}
         className="AddAddonToCollection-option"
         key={key}
         value={key}
@@ -181,7 +185,9 @@ export class AddAddonToCollectionBase extends React.Component<Props> {
 
     actionOptions.push(
       this.createOption({
-        text: i18n.gettext('Add to collection'), key: 'default',
+        text: i18n.gettext('Select a collection…'),
+        key: 'default',
+        disabled: true,
       })
     );
 
@@ -246,7 +252,10 @@ export class AddAddonToCollectionBase extends React.Component<Props> {
     const collectionOptLabel = i18n.gettext('Add to…');
 
     return (
-      <div className={makeClassName('AddAddonToCollection', className)}>
+      <Card
+        className={makeClassName('AddAddonToCollection', className)}
+        header={i18n.gettext('Add to collection')}
+      >
         {errorHandler.renderErrorIfPresent()}
         {addedNotices}
         <Select
@@ -261,7 +270,7 @@ export class AddAddonToCollectionBase extends React.Component<Props> {
             </optgroup>
           ) : null}
         </Select>
-      </div>
+      </Card>
     );
   }
 }
